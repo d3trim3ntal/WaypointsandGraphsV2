@@ -1,69 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FollowWP : MonoBehaviour
 {
-    Transform goal;
-    float speed = 5.0f;
-    float accuracy = 5.0f;
-    float rotSpeed = 2.0f;
 
     public GameObject wpManager;
     GameObject[] wps;
     GameObject currentNode;
-    int currentWP = 0;
-    Graph g;
+    NavMeshAgent agent;
 
     // Start is called before the first frame update
     void Start()
     {
         wps = wpManager.GetComponent<WPManager>().waypoints;
-        g = wpManager.GetComponent<WPManager>().graph;
         currentNode = wps[0];
         Time.timeScale = 3;
+
+        agent = this.GetComponent<NavMeshAgent>();
 
         //Invoke("GoToRuin", 2);
     }
 
     public void GoToHeli()
     {
-        g.AStar(currentNode, wps[0]);
-        currentWP = 0;
+        //g.AStar(currentNode, wps[0]);
+        agent.SetDestination(wps[0].transform.position);
     }
 
     public void GoToRuin()
     {
-        g.AStar(currentNode, wps[1]);
-        currentWP = 0;
+        //g.AStar(currentNode, wps[1]);
+        agent.SetDestination(wps[1].transform.position);
     }
 
     public void GoToFactory()
     {
-        g.AStar(currentNode, wps[4]);
-        currentWP = 0;
+        //g.AStar(currentNode, wps[4]);
+        agent.SetDestination(wps[4].transform.position);
+
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        if (g.pathList.Count == 0 || currentWP == g.pathList.Count)
-        {
-            return;
-        }
-        if (Vector3.Distance(g.pathList[currentWP].getId().transform.position, this.transform.position) < accuracy)
-        {
-            currentNode = g.pathList[currentWP].getId();
-            currentWP++;
-        }
-
-        if (currentWP < g.pathList.Count)
-        {
-            goal = g.pathList[currentWP].getId().transform;
-            Vector3 lookAtGoal = new Vector3(goal.position.x, this.transform.position.y, goal.position.z);
-            Vector3 direction = lookAtGoal - this.transform.position;
-            this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * rotSpeed);
-            this.transform.Translate(0,0, speed * Time.deltaTime);
-        }
+       
     }
 }
